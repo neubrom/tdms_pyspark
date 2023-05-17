@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 import os
 import hashlib
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType
 
 spark = SparkSession.builder.getOrCreate()
 
@@ -78,10 +79,8 @@ for folder in not_converted_folders:
 
             # Convert DataFrame to Parquet format
             parquet_file = csv_file[:-4] + ".parquet"
-            df.write.parquet(parquet_file)
+            df.write.mode("overwrite").parquet(parquet_file)
 
             # Update the lookup table
-            if not existing_row:
-                created_time = os.path.getctime(folder)
-                modified_time = os
+            current_time = spark.sql("SELECT current_timestamp()").collect()[0][0]
 
